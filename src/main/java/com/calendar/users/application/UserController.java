@@ -1,11 +1,13 @@
 package com.calendar.users.application;
 
+import com.calendar.users.domain.models.BusinessUser;
 import com.calendar.users.domain.services.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("users")
@@ -20,5 +22,10 @@ public class UserController {
     @GetMapping
     public String hello() {
         return "Hello World";
+    }
+
+    @GetMapping("me")
+    public ResponseEntity<BusinessUser> readProfile(@AuthenticationPrincipal Jwt jwt) {
+        return ResponseEntity.ok(userService.readProfile(jwt));
     }
 }

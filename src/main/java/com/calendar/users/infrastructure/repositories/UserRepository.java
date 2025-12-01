@@ -12,5 +12,7 @@ import org.springframework.stereotype.Repository;
 public interface UserRepository extends JpaRepository<UserEntity, Long> {
 
     @Query("SELECT f.friend FROM FriendshipEntity f WHERE f.user.id = :userId")
-    Page<UserEntity> findByUserId(@Param("userId") Long userId, Pageable pageable);
+    Page<UserEntity> findFriendByUserId(@Param("userId") Long userId, Pageable pageable);
+
+    UserEntity findByKeycloakId(String keycloakId);
 }

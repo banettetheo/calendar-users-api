@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
+import java.time.LocalDateTime;
 import java.util.Set;
 
 @Setter
@@ -17,13 +17,13 @@ import java.util.Set;
 public class UserEntity {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    private String username;
-    private String firstName;
-    private String lastName;
-    private String email;
+    @Column(name = "keycloak_id", nullable = false, unique = true)
+    private String keycloakId;
+
+    private LocalDateTime joinedDate;
 
     @OneToMany(
             mappedBy = "user",
