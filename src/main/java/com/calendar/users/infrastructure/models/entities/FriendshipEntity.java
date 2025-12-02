@@ -15,18 +15,15 @@ import lombok.Setter;
 @NoArgsConstructor
 public class FriendshipEntity {
 
-    @Id // Annotation R2DBC
+    @Id
     private Long id;
 
-    // Remplacement des annotations @ManyToOne et @JoinColumn par des IDs simples
-    // Les jointures seront gérées par le Repository (ou une logique Service)
     @Column("user_id")
     private Long userId;
 
     @Column("friend_id")
     private Long friendId;
 
-    // Constructeur adapté pour R2DBC (utilisation des IDs)
     public FriendshipEntity(Long userId, Long friendId) {
         this.userId = userId;
         this.friendId = friendId;
