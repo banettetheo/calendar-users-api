@@ -2,7 +2,6 @@ package com.calendar.users.infrastructure.adapters;
 
 import com.calendar.users.configuration.properties.AwsS3Properties;
 import com.calendar.users.domain.ports.AwsPort;
-import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.core.io.buffer.DataBufferUtils;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Component;
