@@ -7,6 +7,7 @@ import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @RestController
@@ -29,6 +30,13 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt) {
         return userService.readProfile(jwt).map(ResponseEntity::ok);
     }
+
+//    @GetMapping("{id}/friends")
+//    public Flux<ResponseEntity<BusinessUser>> readFriends(
+//            @RequestParam Long id
+//    ) {
+//        return userService.
+//    }
 
     @PostMapping("me/profilePicture")
     public Mono<ResponseEntity<String>> updateProfilePicture(

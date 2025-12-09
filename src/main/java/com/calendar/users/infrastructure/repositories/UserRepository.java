@@ -13,8 +13,8 @@ import reactor.core.publisher.Mono;
 @Repository
 public interface UserRepository extends ReactiveCrudRepository<UserEntity, Long> {
 
-    @Query("SELECT u.* FROM app_user u " + // Sélectionne toutes les colonnes de la table 'app_user'
-            "INNER JOIN user_friends f ON u.id = f.friend_id " + // Jointure sur l'ID de l'ami
+    @Query("SELECT u.* FROM app_user u " +
+            "INNER JOIN user_friends f ON u.id = f.friend_id " +
             "WHERE f.user_id = :userId")
     Flux<UserEntity> findFriendByUserId(Long userId, Pageable pageable);
 
