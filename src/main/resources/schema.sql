@@ -1,54 +1,64 @@
 -- Fichier : src/main/resources/schema.sql
 
+-- 1. Nettoyage initial
 DROP SCHEMA public CASCADE;
-
--- 2. Recrée le schéma public vide
 CREATE SCHEMA public;
-
--- 3. Accorde les permissions de base sur le nouveau schéma
 GRANT ALL ON SCHEMA public TO CURRENT_USER;
 GRANT ALL ON SCHEMA public TO PUBLIC;
 
--- TABLE PRINCIPALE : app_user (renommée pour éviter conflit avec le mot-clé 'user')
+-- =============================================
+-- TABLE 1 : app_user (Entité principale)
+-- =============================================
 CREATE TABLE IF NOT EXISTS app_user (
-    -- ID : Clé primaire, auto-incrémentée (BIGSERIAL pour des raisons de performance/taille)
                                         id BIGSERIAL PRIMARY KEY,
-
                                         keycloak_id TEXT UNIQUE NOT NULL,
+                                        profile_pic_url TEXT,
+                                        joined_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
+);
 
-    profile_pic_url TEXT,
+-- Index pour la recherche par clé externe (déjà vu)
+CREATE UNIQUE INDEX idx_app_user_keycloak_id ON app_user (keycloak_id);
 
-    -- Date d'adhésion
-    joined_date TIMESTAMP WITHOUT TIME ZONE NOT NULL
-    );
 
--- TABLE DE LIAISON : user_friends
+-- =============================================
+-- TABLE 2 : user_friends (Amitiés ACCEPTÉES)
+-- =============================================
 CREATE TABLE IF NOT EXISTS user_friends (
                                             id BIGSERIAL PRIMARY KEY,
+                                            user_id BIGINT NOT NULL, -- L'utilisateur qui a validé la relation (selon votre modèle)
+                                            friend_id BIGINT NOT NULL, -- L'ami
 
-    -- Clé étrangère vers l'utilisateur (le demandeur d'amitié/l'un des deux côtés)
-                                            user_id BIGINT NOT NULL,
-
-    -- Clé étrangère vers l'ami
-                                            friend_id BIGINT NOT NULL,
-
-    -- Contrainte d'unicité : Un utilisateur ne peut être ami qu'une seule fois avec le même ami.
-    -- (Cette contrainte est nécessaire même si l'amitié est stockée dans les deux sens)
                                             UNIQUE (user_id, friend_id),
+                                            CHECK (user_id != friend_id),
 
-    -- Contrainte : L'utilisateur ne peut pas être ami avec lui-même
-    CHECK (user_id != friend_id),
+                                            CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES app_user(id) ON DELETE CASCADE,
+                                            CONSTRAINT fk_friend FOREIGN KEY (friend_id) REFERENCES app_user(id) ON DELETE CASCADE
+);
 
-    -- DÉFINITION DES CLÉS ÉTRANGÈRES :
-    -- Clé étrangère vers la table app_user
-    CONSTRAINT fk_user
-    FOREIGN KEY (user_id)
-    REFERENCES app_user(id)
-    ON DELETE CASCADE, -- Supprime les amitiés si l'utilisateur est supprimé
+-- Index pour accélérer la jointure principale sur les amitiés
+CREATE INDEX idx_friends_by_user ON user_friends (user_id);
 
--- Clé étrangère vers la table app_user pour l'ami
-    CONSTRAINT fk_friend
-    FOREIGN KEY (friend_id)
-    REFERENCES app_user(id)
-    ON DELETE CASCADE -- Supprime les amitiés si l'ami est supprimé
-    );
+
+-- =============================================
+-- TABLE 3 : friend_requests (Demandes en ATTENTE)
+-- =============================================
+CREATE TABLE IF NOT EXISTS friend_requests (
+                                               id BIGSERIAL PRIMARY KEY,
+                                               sender_id BIGINT NOT NULL,   -- L'utilisateur qui a envoyé la demande
+                                               receiver_id BIGINT NOT NULL,  -- L'utilisateur qui doit accepter
+                                               requested_at TIMESTAMP WITHOUT TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+
+    -- Empêche qu'une demande soit envoyée deux fois
+                                               UNIQUE (sender_id, receiver_id),
+
+    -- Contrainte pour gérer les cas d'erreur de logique
+                                               CHECK (sender_id != receiver_id),
+
+                                               CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES app_user(id) ON DELETE CASCADE,
+                                               CONSTRAINT fk_receiver FOREIGN KEY (receiver_id) REFERENCES app_user(id) ON DELETE CASCADE
+);
+
+-- Index pour accélérer la vérification des demandes reçues et envoyées
+-- (Essentiel pour la procédure stockée et la requête de statut)
+CREATE INDEX idx_fr_receiver ON friend_requests (receiver_id);
+CREATE INDEX idx_fr_sender ON friend_requests (sender_id);
