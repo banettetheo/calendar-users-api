@@ -1,10 +1,12 @@
 package com.calendar.users.application;
 
 import com.calendar.users.domain.models.BusinessUser;
+import com.calendar.users.domain.models.UserWithStatusDTO;
 import com.calendar.users.domain.services.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
@@ -21,8 +23,8 @@ public class UserController {
     }
 
     @GetMapping
-    public String hello() {
-        return "Hello World";
+    public Flux<UserWithStatusDTO> readUsersWithRelationshipStatus(@AuthenticationPrincipal Jwt jwt) {
+        return userService.readUsersWithRelationshipStatus(jwt);
     }
 
     @GetMapping("me")
@@ -43,4 +45,5 @@ public class UserController {
             @AuthenticationPrincipal Jwt jwt, @RequestPart("file") Mono<FilePart> filePartMono) {
         return userService.updateProfilePicture(jwt, filePartMono).map(ResponseEntity::ok);
     }
+
 }

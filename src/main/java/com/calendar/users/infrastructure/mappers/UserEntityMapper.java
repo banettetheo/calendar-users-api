@@ -1,6 +1,8 @@
 package com.calendar.users.infrastructure.mappers;
 
 import com.calendar.users.domain.models.BusinessUser;
+import com.calendar.users.domain.models.UserWithStatusDTO;
+import com.calendar.users.infrastructure.models.dtos.UserWithStatusDatabaseDTO;
 import com.calendar.users.infrastructure.models.entities.UserEntity;
 import org.mapstruct.Mapper;
 
@@ -10,4 +12,6 @@ public interface UserEntityMapper {
     BusinessUser toBusinessUser(UserEntity userEntity);
 
     UserEntity toUserEntity(BusinessUser businessUser);
+
+    UserWithStatusDTO toUserWithStatusDTO(UserWithStatusDatabaseDTO userWithStatusDatabaseDTO);
 }

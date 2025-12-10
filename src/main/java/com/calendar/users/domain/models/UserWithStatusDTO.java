@@ -2,9 +2,10 @@ package com.calendar.users.domain.models;
 
 import java.time.LocalDateTime;
 
-public record BusinessUser(
-
+public record UserWithStatusDTO(
         Long id,
         String profilePicUrl,
-        LocalDateTime joinedDate
-) {}
+        LocalDateTime joinedDate,
+        String relationshipStatus
+) {
+}

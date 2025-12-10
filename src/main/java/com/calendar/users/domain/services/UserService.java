@@ -1,11 +1,13 @@
 package com.calendar.users.domain.services;
 
 import com.calendar.users.domain.models.BusinessUser;
+import com.calendar.users.domain.models.UserWithStatusDTO;
 import com.calendar.users.domain.ports.AwsPort;
 import com.calendar.users.domain.ports.UserRepositoryPort;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -42,5 +44,9 @@ public class UserService {
                                             update > 0 ? Mono.just(profilePicUrl) :  Mono.error(new Exception())
                                         )
                         ));
+    }
+
+    public Flux<UserWithStatusDTO> readUsersWithRelationshipStatus(Jwt jwt) {
+        return userRepositoryPort.getUsersWithRelationshipStatus(jwt.getSubject());
     }
 }
