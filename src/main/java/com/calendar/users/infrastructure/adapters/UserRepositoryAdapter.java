@@ -1,7 +1,6 @@
 package com.calendar.users.infrastructure.adapters;
 
 import com.calendar.users.domain.models.BusinessUser;
-import com.calendar.users.domain.models.UserWithStatusDTO;
 import com.calendar.users.domain.ports.UserRepositoryPort;
 import com.calendar.users.infrastructure.mappers.UserEntityMapper;
 import com.calendar.users.infrastructure.models.entities.UserEntity;
@@ -41,9 +40,5 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
 
     public Mono<Integer> updateProfilePicUrl(String profilePicUrl, String keycloakId) {
         return userRepository.updateProfilePicUrlByKeycloakId(profilePicUrl, keycloakId);
-    }
-
-    public Flux<UserWithStatusDTO> getUsersWithRelationshipStatus(String keycloakId) {
-        return userRepository.findUsersWithStatus(keycloakId).map(userEntityMapper::toUserWithStatusDTO);
     }
 }
