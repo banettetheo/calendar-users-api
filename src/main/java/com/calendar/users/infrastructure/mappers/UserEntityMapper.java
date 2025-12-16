@@ -10,5 +10,4 @@ public interface UserEntityMapper {
     BusinessUser toBusinessUser(UserEntity userEntity);
 
     UserEntity toUserEntity(BusinessUser businessUser);
-
 }

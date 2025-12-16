@@ -11,4 +11,6 @@ public interface UserRepositoryPort {
 
     Mono<Integer> updateProfilePicUrl(String profilePicUrl, String keycloakId);
 
+    Mono<Long> findIdByKeycloakId(String keycloakId);
+
 }

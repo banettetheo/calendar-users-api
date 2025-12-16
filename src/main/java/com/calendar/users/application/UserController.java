@@ -25,9 +25,9 @@ public class UserController {
         return userService.readProfile(userId).map(ResponseEntity::ok);
     }
 
-    @PostMapping("signUp")
-    public Mono<ResponseEntity<BusinessUser>> signUp(@RequestHeader("X-Keycloak-Sub") String keycloakId) {
-        return userService.createUserOnSignUp(keycloakId).map(ResponseEntity::ok);
+    @GetMapping("resolve")
+    public Mono<ResponseEntity<Long>> resolveInternalUserId(@RequestHeader("X-Keycloak-Sub") String keycloakId) {
+        return userService.resolveInternalUserId(keycloakId).map(ResponseEntity::ok);
     }
 
     @PostMapping("me/profilePicture")

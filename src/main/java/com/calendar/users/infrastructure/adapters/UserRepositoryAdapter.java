@@ -34,6 +34,10 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         }
     }
 
+    public Mono<Long> findIdByKeycloakId(String keycloakId) {
+        return userRepository.findIdByKeycloakId(keycloakId);
+    }
+
     public Mono<BusinessUser> getBusinessUserByUserId(String userId) {
         return userRepository.findById(userId).map(userEntityMapper::toBusinessUser);
     }

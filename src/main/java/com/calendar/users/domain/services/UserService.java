@@ -23,8 +23,10 @@ public class UserService {
                 .onErrorResume(e -> Mono.empty());
     }
 
-    public Mono<BusinessUser> createUserOnSignUp(String keycloakId) {
-        return userRepositoryPort.save(new BusinessUser(null, null, LocalDateTime.now()), keycloakId);
+    public Mono<Long> resolveInternalUserId(String keycloakId) {
+        return userRepositoryPort.findIdByKeycloakId(keycloakId)
+                        .switchIfEmpty(
+                                userRepositoryPort.save(new BusinessUser(null, null, LocalDateTime.now()), keycloakId).map(BusinessUser::id));
     }
 
     public Mono<String> updateProfilePicture(String keycloakId, Mono<FilePart> filePartMono) {
