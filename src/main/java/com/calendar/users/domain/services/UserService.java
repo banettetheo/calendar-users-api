@@ -3,6 +3,7 @@ package com.calendar.users.domain.services;
 import com.calendar.users.domain.models.BusinessUser;
 import com.calendar.users.domain.ports.AwsPort;
 import com.calendar.users.domain.ports.KeycloakPort;
+import com.calendar.users.domain.ports.UserEventPublisher;
 import com.calendar.users.domain.ports.UserRepositoryPort;
 import com.calendar.users.infrastructure.models.dtos.KeycloakUserResponse;
 import org.springframework.http.codec.multipart.FilePart;
@@ -15,11 +16,13 @@ public class UserService {
     private final UserRepositoryPort userRepositoryPort;
     private final AwsPort awsPort;
     private final KeycloakPort keycloakPort;
+    private final UserEventPublisher userEventPublisher;
 
-    public UserService(UserRepositoryPort userRepositoryPort, AwsPort awsPort, KeycloakPort keycloakPort) {
+    public UserService(UserRepositoryPort userRepositoryPort, AwsPort awsPort, KeycloakPort keycloakPort, UserEventPublisher userEventPublisher) {
         this.userRepositoryPort = userRepositoryPort;
         this.awsPort = awsPort;
         this.keycloakPort = keycloakPort;
+        this.userEventPublisher = userEventPublisher;
     }
 
     public Mono<BusinessUser> readProfile(String userId) {
@@ -37,7 +40,8 @@ public class UserService {
                                                         keycloakUserResponse.firstName(),
                                                         keycloakUserResponse.lastName(),
                                                         null,
-                                                        LocalDateTime.now()), keycloakId).map(BusinessUser::id)))
+                                                        LocalDateTime.now()), keycloakId)
+                                                        .flatMap(userEventPublisher::publishUserCreatedEvent)))
                                                 .switchIfEmpty(Mono.error(new RuntimeException("Keycloak User not found")));
     }
 
