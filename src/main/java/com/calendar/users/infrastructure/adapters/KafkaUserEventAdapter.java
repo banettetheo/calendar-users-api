@@ -15,6 +15,8 @@ public class KafkaUserEventAdapter implements UserEventPublisher {
     private final KafkaDataMapper kafkaDataMapper;
     private final ObjectMapper objectMapper;
 
+    private static final String USER_CREATED_TOPIC = "USER_CREATED";
+
     public KafkaUserEventAdapter(KafkaTemplate<String, String> kafkaTemplate, KafkaDataMapper kafkaDataMapper, ObjectMapper objectMapper) {
         this.kafkaTemplate = kafkaTemplate;
         this.kafkaDataMapper = kafkaDataMapper;
@@ -24,10 +26,10 @@ public class KafkaUserEventAdapter implements UserEventPublisher {
     public Mono<Long> publishUserCreatedEvent(BusinessUser businessUser) {
         return Mono.fromCallable(() -> objectMapper.writeValueAsString(kafkaDataMapper.toUserCreatedEventDTO(businessUser)))
                 .flatMap(payload -> {
-                    var future = kafkaTemplate.send("calendar-events", String.valueOf(businessUser.id()), payload);
+                    var future = kafkaTemplate.send(USER_CREATED_TOPIC, String.valueOf(businessUser.id()), payload);
                     return Mono.fromFuture(future);
                 })
-                .thenReturn(businessUser.id())
-                .onErrorMap(throwable -> new RuntimeException("Error publishing user created event", throwable));
+                .onErrorMap(throwable -> new RuntimeException("Error publishing user created event", throwable))
+                .thenReturn(businessUser.id());
     }
 }

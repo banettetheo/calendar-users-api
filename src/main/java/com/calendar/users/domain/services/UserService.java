@@ -7,6 +7,7 @@ import com.calendar.users.domain.ports.UserEventPublisher;
 import com.calendar.users.domain.ports.UserRepositoryPort;
 import com.calendar.users.infrastructure.models.dtos.KeycloakUserResponse;
 import org.springframework.http.codec.multipart.FilePart;
+import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -30,6 +31,7 @@ public class UserService {
                 .onErrorResume(e -> Mono.empty());
     }
 
+    @Transactional
     public Mono<Long> resolveInternalUserId(String keycloakId) {
         return userRepositoryPort.findIdByKeycloakId(keycloakId)
                         .switchIfEmpty(
@@ -41,7 +43,7 @@ public class UserService {
                                                         keycloakUserResponse.lastName(),
                                                         null,
                                                         LocalDateTime.now()), keycloakId)
-                                                        .flatMap(userEventPublisher::publishUserCreatedEvent)))
+                                                        .flatMap(userEventPublisher::publishUserCreatedEvent).onErrorMap(e -> new RuntimeException(e.getMessage(), e))))
                                                 .switchIfEmpty(Mono.error(new RuntimeException("Keycloak User not found")));
     }
 
