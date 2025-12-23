@@ -24,7 +24,7 @@ public class ProfileController {
 
     @GetMapping
     public Mono<ResponseEntity<BusinessUser>> readProfile(
-            @RequestHeader("X-Internal-User-Id") String userId) {
+            @RequestHeader("X-Internal-User-Id") Long userId) {
         return userService.readProfile(userId).map(ResponseEntity::ok);
     }
 
@@ -33,9 +33,9 @@ public class ProfileController {
 //
 //    }
 
-    @PostMapping("profile/picture")
+    @PostMapping("picture")
     public Mono<ResponseEntity<String>> updateProfilePicture(
-            @RequestHeader("X-Keycloak-Sub") String keycloakId, @RequestPart("file") Mono<FilePart> filePartMono) {
-        return userService.updateProfilePicture(keycloakId, filePartMono).map(ResponseEntity::ok);
+            @RequestHeader("X-Internal-User-Id") Long userId, @RequestPart("file") Mono<FilePart> filePartMono) {
+        return userService.updateProfilePicture(userId, filePartMono).map(ResponseEntity::ok);
     }
 }

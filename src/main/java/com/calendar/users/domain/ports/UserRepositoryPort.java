@@ -7,9 +7,9 @@ public interface UserRepositoryPort {
 
     Mono<BusinessUser> save(BusinessUser businessUser, String keycloakId);
 
-    Mono<BusinessUser> getBusinessUserByUserId(String UserId);
+    Mono<BusinessUser> getBusinessUserByUserId(Long UserId);
 
-    Mono<Integer> updateProfilePicUrl(String profilePicUrl, String keycloakId);
+    Mono<Integer> updateProfilePicUrl(String profilePicUrl, Long userId);
 
     Mono<Long> findIdByKeycloakId(String keycloakId);
 

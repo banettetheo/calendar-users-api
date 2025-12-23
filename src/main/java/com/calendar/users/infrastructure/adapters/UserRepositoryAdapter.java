@@ -7,7 +7,6 @@ import com.calendar.users.infrastructure.models.entities.UserEntity;
 import com.calendar.users.infrastructure.repositories.UserRepository;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Component
@@ -38,11 +37,11 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
         return userRepository.findIdByKeycloakId(keycloakId);
     }
 
-    public Mono<BusinessUser> getBusinessUserByUserId(String userId) {
+    public Mono<BusinessUser> getBusinessUserByUserId(Long userId) {
         return userRepository.findById(userId).map(userEntityMapper::toBusinessUser);
     }
 
-    public Mono<Integer> updateProfilePicUrl(String profilePicUrl, String keycloakId) {
-        return userRepository.updateProfilePicUrlByKeycloakId(profilePicUrl, keycloakId);
+    public Mono<Integer> updateProfilePicUrl(String profilePicUrl, Long userId) {
+        return userRepository.updateProfilePicUrlByKeycloakId(profilePicUrl, userId);
     }
 }

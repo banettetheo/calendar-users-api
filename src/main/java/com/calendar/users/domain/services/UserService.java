@@ -5,7 +5,6 @@ import com.calendar.users.domain.ports.AwsPort;
 import com.calendar.users.domain.ports.KeycloakPort;
 import com.calendar.users.domain.ports.UserEventPublisher;
 import com.calendar.users.domain.ports.UserRepositoryPort;
-import com.calendar.users.infrastructure.models.dtos.KeycloakUserResponse;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.transaction.annotation.Transactional;
 import reactor.core.publisher.Mono;
@@ -26,7 +25,7 @@ public class UserService {
         this.userEventPublisher = userEventPublisher;
     }
 
-    public Mono<BusinessUser> readProfile(String userId) {
+    public Mono<BusinessUser> readProfile(Long userId) {
         return userRepositoryPort.getBusinessUserByUserId(userId)
                 .onErrorResume(e -> Mono.empty());
     }
@@ -47,11 +46,11 @@ public class UserService {
                                                 .switchIfEmpty(Mono.error(new RuntimeException("Keycloak User not found")));
     }
 
-    public Mono<String> updateProfilePicture(String keycloakId, Mono<FilePart> filePartMono) {
+    public Mono<String> updateProfilePicture(Long userId, Mono<FilePart> filePartMono) {
         return filePartMono.flatMap(filePart ->
-                    awsPort.storeObject(filePart, keycloakId)
+                    awsPort.storeObject(filePart, userId.toString())
                         .flatMap(profilePicUrl ->
-                                userRepositoryPort.updateProfilePicUrl(profilePicUrl, keycloakId)
+                                userRepositoryPort.updateProfilePicUrl(profilePicUrl, userId)
                                         .flatMap(update ->
                                             update > 0 ? Mono.just(profilePicUrl) :  Mono.error(new Exception())
                                         )
