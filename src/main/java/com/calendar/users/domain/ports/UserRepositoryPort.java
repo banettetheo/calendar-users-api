@@ -9,6 +9,8 @@ public interface UserRepositoryPort {
 
     Mono<BusinessUser> getBusinessUserByUserId(Long UserId);
 
+    Mono<Boolean> existsByUserNameAndHashtag(String userName, Integer hashTag);
+
     Mono<Integer> updateProfilePicUrl(String profilePicUrl, Long userId);
 
     Mono<Long> findIdByKeycloakId(String keycloakId);

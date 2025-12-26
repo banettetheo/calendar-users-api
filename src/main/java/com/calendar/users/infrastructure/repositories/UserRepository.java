@@ -14,6 +14,8 @@ public interface UserRepository extends ReactiveCrudRepository<UserEntity, Long>
 
     Mono<Long> findIdByKeycloakId(String keycloakId);
 
+    Mono<Boolean> existsByUserNameAndHashtag(String userName, Integer hashTag);
+
     @Modifying
     @Query("UPDATE app_user SET profile_pic_url = :url WHERE id = :userId")
     Mono<Integer> updateProfilePicUrlByKeycloakId(String url, Long userId);

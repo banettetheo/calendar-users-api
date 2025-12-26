@@ -6,6 +6,7 @@ public record BusinessUser(
 
         Long id,
         String userName,
+        Integer hashtag,
         String firstName,
         String lastName,
         String profilePicUrl,

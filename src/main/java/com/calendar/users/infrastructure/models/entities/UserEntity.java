@@ -29,6 +29,9 @@ public class UserEntity {
     @Column("user_name")
     private String userName;
 
+    @Column("hashtag")
+    private Integer hashtag;
+
     @Column("first_name")
     private String firstName;
 
