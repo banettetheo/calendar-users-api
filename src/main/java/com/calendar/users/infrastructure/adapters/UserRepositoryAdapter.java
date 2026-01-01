@@ -35,7 +35,8 @@ public class UserRepositoryAdapter implements UserRepositoryPort {
                     log.error("Erreur de contrainte DB: {}", e.getMessage());
                     return new BusinessException(BusinessErrorCode.USER_ALREADY_EXISTS);
                 })
-                .onErrorMap(e -> {
+                .onErrorMap(e -> !(e instanceof BusinessException),
+                        e -> {
                     log.error("Erreur lors de l'enregistrement de l'utilisateur en base : {}", e.getMessage());
                     return new TechnicalException(TechnicalErrorCode.DATABASE_ERROR);
                 });
